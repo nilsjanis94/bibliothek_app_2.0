@@ -10,7 +10,13 @@ class BuchForm(forms.ModelForm):
             'verlagungsdatum': forms.DateInput(attrs={'type': 'date'}),
         }
 
+class BuchChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.titel} - {obj.autor} (ISBN: {obj.ISBN})"
+
 class BuchExemplarForm(forms.ModelForm):
+    buch = BuchChoiceField(queryset=Buch.objects.all())
+
     class Meta:
         model = BuchExemplar
         fields = ['buch', 'inventarnummer', 'anschaffungsdatum', 'zustand', 'status']
@@ -40,7 +46,18 @@ class SchülerForm(forms.ModelForm):
         self.fields['gesperrtBis'].initial = date(2000, 1, 1)
         self.fields['anzahlVerspätungen'].initial = 0
 
+class ExemplarChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.buch.titel} - {obj.inventarnummer}"
+
+class SchuelerChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.vorname} {obj.name} ({obj.klasse})"
+
 class AusleiheForm(forms.ModelForm):
+    exemplar = ExemplarChoiceField(queryset=BuchExemplar.objects.none())
+    schüler = SchuelerChoiceField(queryset=Schüler.objects.none())
+
     class Meta:
         model = Ausleihe
         fields = ['exemplar', 'schüler', 'fälligkeitsdatum']
@@ -54,9 +71,12 @@ class AusleiheForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         # Nur verfügbare Exemplare anzeigen
-        self.fields['exemplar'].queryset = BuchExemplar.objects.filter(
+        verfuegbare_exemplare = BuchExemplar.objects.filter(
             status='verfügbar'
         ).exclude(ausleihen__istZurückgegeben=False)
+        
+        # Bessere Darstellung im Dropdown
+        self.fields['exemplar'].queryset = verfuegbare_exemplare
         
         # Nur Schüler anzeigen, die ausleihen können
         self.fields['schüler'].queryset = Schüler.objects.filter(
