@@ -1,0 +1,35 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Exemplar löschen{% endblock %}
+
+{% block content %}
+    <h1>Exemplar löschen</h1>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ exemplar.buch.titel }}</h5>
+            <p class="card-text">
+                <strong>Inventarnummer:</strong> {{ exemplar.inventarnummer }}<br>
+                <strong>Anschaffungsdatum:</strong> {{ exemplar.anschaffungsdatum }}<br>
+                <strong>Zustand:</strong> {{ exemplar.zustand }}<br>
+                <strong>Status:</strong> 
+                {% if exemplar.status == 'verfügbar' %}
+                    <span class="badge bg-success">Verfügbar</span>
+                {% elif exemplar.status == 'ausgeliehen' %}
+                    <span class="badge bg-warning">Ausgeliehen</span>
+                {% elif exemplar.status == 'verloren' %}
+                    <span class="badge bg-danger">Verloren</span>
+                {% elif exemplar.status == 'beschädigt' %}
+                    <span class="badge bg-danger">Beschädigt</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <p>Sind Sie sicher, dass Sie dieses Exemplar löschen möchten?</p>
+        <button type="submit" class="btn btn-danger">Ja, löschen</button>
+        <a href="{% url 'myapp:exemplar_detail' exemplar.id %}" class="btn btn-secondary">Abbrechen</a>
+    </form>
+{% endblock %} 

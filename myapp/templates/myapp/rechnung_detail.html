@@ -1,0 +1,30 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Rechnung Details{% endblock %}
+
+{% block content %}
+    <h1>Rechnung Details</h1>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Rechnung #{{ rechnung.rechnungsNummer }}</h5>
+            <p><strong>Ausleihe:</strong> #{{ rechnung.ausleihe.id }}</p>
+            <p><strong>Schüler:</strong> {{ rechnung.ausleihe.schueler.vorname }} {{ rechnung.ausleihe.schueler.name }}</p>
+            <p><strong>Buch:</strong> {{ rechnung.ausleihe.exemplar.buch.titel }}</p>
+            <p><strong>Datum:</strong> {{ rechnung.datum }}</p>
+            <p><strong>Betrag:</strong> {{ rechnung.betrag }} €</p>
+            <p><strong>Status:</strong> 
+                {% if rechnung.istBezahlt %}
+                    <span class="badge bg-success">Bezahlt</span>
+                {% else %}
+                    <span class="badge bg-danger">Offen</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    
+    {% if not rechnung.istBezahlt %}
+        <a href="{% url 'myapp:rechnung_bezahlen' rechnung.id %}" class="btn btn-success">Als bezahlt markieren</a>
+    {% endif %}
+    <a href="{% url 'myapp:rechnung_liste' %}" class="btn btn-secondary">Zurück zur Liste</a>
+{% endblock %} 

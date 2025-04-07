@@ -1,0 +1,38 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Mahnungen{% endblock %}
+
+{% block content %}
+    <h1>Offene Mahnungen</h1>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Ausleihe</th>
+                <th>Schüler</th>
+                <th>Buch</th>
+                <th>Erstellungsdatum</th>
+                <th>Mahnungstyp</th>
+                <th>Aktionen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mahnung in mahnungen %}
+                <tr>
+                    <td>#{{ mahnung.ausleihe.id }}</td>
+                    <td>{{ mahnung.ausleihe.schueler.vorname }} {{ mahnung.ausleihe.schueler.name }}</td>
+                    <td>{{ mahnung.ausleihe.exemplar.buch.titel }}</td>
+                    <td>{{ mahnung.erstellungsdatum }}</td>
+                    <td>{{ mahnung.mahnungsTyp }}</td>
+                    <td>
+                        <a href="{% url 'myapp:mahnung_detail' mahnung.id %}" class="btn btn-sm btn-info">Details</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6">Keine offenen Mahnungen</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %} 

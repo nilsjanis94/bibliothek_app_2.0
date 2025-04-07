@@ -1,20 +1,32 @@
 from django import forms
-from .models import Ausleihe, BuchExemplar, Schüler, Buch, Mahnung, Rechnung
+from .models import Ausleihe, BuchExemplar, Schueler, Buch, Mahnung, Rechnung
 from datetime import date, timedelta
 
-class BuchForm(forms.ModelForm):
+class BaseForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            if isinstance(field.widget, (forms.TextInput, forms.NumberInput, forms.EmailInput, forms.DateInput)):
+                field.widget.attrs.update({'class': 'form-control'})
+            elif isinstance(field.widget, forms.Select):
+                field.widget.attrs.update({'class': 'form-select'})
+            elif isinstance(field.widget, forms.Textarea):
+                field.widget.attrs.update({'class': 'form-control', 'rows': 3})
+
+class BuchForm(BaseForm):
     class Meta:
         model = Buch
-        fields = ['ISBN', 'titel', 'autor', 'verlag', 'verlagungsdatum', 'wiederbeschaffungswert']
+        fields = ['titel', 'autor', 'ISBN', 'verlag', 'verlagungsdatum', 'wiederbeschaffungswert']
         widgets = {
             'verlagungsdatum': forms.DateInput(attrs={'type': 'date'}),
+            'wiederbeschaffungswert': forms.NumberInput(attrs={'step': '0.01'}),
         }
 
 class BuchChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return f"{obj.titel} - {obj.autor} (ISBN: {obj.ISBN})"
 
-class BuchExemplarForm(forms.ModelForm):
+class BuchExemplarForm(BaseForm):
     buch = BuchChoiceField(queryset=Buch.objects.all())
 
     class Meta:
@@ -33,18 +45,19 @@ class BuchExemplarForm(forms.ModelForm):
         self.fields['status'].initial = 'verfügbar'
         self.fields['anschaffungsdatum'].initial = date.today()
 
-class SchülerForm(forms.ModelForm):
+class SchuelerForm(BaseForm):
     class Meta:
-        model = Schüler
-        fields = ['schueler_id', 'name', 'vorname', 'klasse', 'email', 'gesperrtBis', 'anzahlVerspätungen']
+        model = Schueler
+        fields = ['vorname', 'name', 'klasse', 'email', 'gesperrtBis', 'anzahlVerspaetungen']
         widgets = {
             'gesperrtBis': forms.DateInput(attrs={'type': 'date'}),
+            'anzahlVerspaetungen': forms.NumberInput(attrs={'min': 0}),
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['gesperrtBis'].initial = date(2000, 1, 1)
-        self.fields['anzahlVerspätungen'].initial = 0
+        self.fields['anzahlVerspaetungen'].initial = 0
 
 class ExemplarChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -54,15 +67,15 @@ class SchuelerChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return f"{obj.vorname} {obj.name} ({obj.klasse})"
 
-class AusleiheForm(forms.ModelForm):
+class AusleiheForm(BaseForm):
     exemplar = ExemplarChoiceField(queryset=BuchExemplar.objects.none())
-    schüler = SchuelerChoiceField(queryset=Schüler.objects.none())
+    schueler = SchuelerChoiceField(queryset=Schueler.objects.none())
 
     class Meta:
         model = Ausleihe
-        fields = ['exemplar', 'schüler', 'fälligkeitsdatum']
+        fields = ['exemplar', 'schueler', 'faelligkeitsdatum']
         widgets = {
-            'fälligkeitsdatum': forms.DateInput(attrs={'type': 'date'}),
+            'faelligkeitsdatum': forms.DateInput(attrs={'type': 'date'}),
         }
     
     def __init__(self, *args, **kwargs):
@@ -70,60 +83,41 @@ class AusleiheForm(forms.ModelForm):
         schueler_id = kwargs.pop('schueler_id', None)
         super().__init__(*args, **kwargs)
         
-        # Nur verfügbare Exemplare anzeigen
-        verfuegbare_exemplare = BuchExemplar.objects.filter(
-            status='verfügbar'
-        ).exclude(ausleihen__istZurückgegeben=False)
+        # Filtere verfügbare Exemplare
+        self.fields['exemplar'].queryset = BuchExemplar.objects.filter(status=BuchExemplar.STATUS_VERFUEGBAR)
         
-        # Bessere Darstellung im Dropdown
-        self.fields['exemplar'].queryset = verfuegbare_exemplare
-        
-        # Nur Schüler anzeigen, die ausleihen können
-        self.fields['schüler'].queryset = Schüler.objects.filter(
-            anzahlVerspätungen__lt=3,
-            gesperrtBis__lt=date.today()
+        # Filtere Schüler, die ausleihen dürfen
+        self.fields['schueler'].queryset = Schueler.objects.filter(
+            gesperrtBis__lt=date.today(),
+            anzahlVerspaetungen__lt=3
         )
         
-        # Vorausgewählte Werte setzen
+        # Setze vorausgewählte Werte
         if exemplar_id:
             self.fields['exemplar'].initial = exemplar_id
         if schueler_id:
-            self.fields['schüler'].initial = schueler_id
+            self.fields['schueler'].initial = schueler_id
             
-        # Standardwert für Fälligkeitsdatum
-        self.fields['fälligkeitsdatum'].initial = date.today() + timedelta(days=14)
-    
+        # Setze Standardwert für Fälligkeitsdatum (14 Tage ab heute)
+        self.fields['faelligkeitsdatum'].initial = date.today() + timedelta(days=14)
+
     def clean(self):
         cleaned_data = super().clean()
         exemplar = cleaned_data.get('exemplar')
-        schüler = cleaned_data.get('schüler')
+        schueler = cleaned_data.get('schueler')
         
         if exemplar and not exemplar.istVerfügbar():
-            raise forms.ValidationError("Dieses Exemplar ist nicht verfügbar.")
-        
-        if schüler and not schüler.kannAusleihen():
-            raise forms.ValidationError("Dieser Schüler kann keine Bücher ausleihen.")
+            raise forms.ValidationError('Das Exemplar ist nicht verfügbar.')
+            
+        if schueler and not schueler.kannAusleihen():
+            raise forms.ValidationError('Der Schüler ist gesperrt und darf keine Bücher ausleihen.')
             
         return cleaned_data
 
-class MahnungForm(forms.ModelForm):
+class MahnungForm(BaseForm):
     class Meta:
         model = Mahnung
-        fields = ['ausleihe', 'mahnungsTyp']
-    
-    def __init__(self, *args, **kwargs):
-        ausleihe_id = kwargs.pop('ausleihe_id', None)
-        super().__init__(*args, **kwargs)
-        
-        # Nur überfällige Ausleihen anzeigen
-        self.fields['ausleihe'].queryset = Ausleihe.objects.filter(
-            istZurückgegeben=False,
-            fälligkeitsdatum__lt=date.today()
-        )
-        
-        if ausleihe_id:
-            self.fields['ausleihe'].initial = ausleihe_id
-            self.fields['ausleihe'].widget = forms.HiddenInput()
+        fields = ['mahnungsTyp']
 
 class RechnungForm(forms.ModelForm):
     class Meta:
@@ -136,8 +130,8 @@ class RechnungForm(forms.ModelForm):
         
         # Nur überfällige Ausleihen anzeigen
         self.fields['ausleihe'].queryset = Ausleihe.objects.filter(
-            istZurückgegeben=False,
-            fälligkeitsdatum__lt=date.today()
+            istZurueckgegeben=False,
+            faelligkeitsdatum__lt=date.today()
         )
         
         if ausleihe_id:

@@ -18,9 +18,9 @@
                     <p><strong>Ausleihdatum:</strong> {{ ausleihe.ausleihdatum }}</p>
                     <p><strong>Fälligkeitsdatum:</strong> {{ ausleihe.fälligkeitsdatum }}</p>
                     <p><strong>Status:</strong> 
-                        {% if ausleihe.istZurückgegeben %}
+                        {% if ausleihe.istZurueckgegeben %}
                             <span class="badge bg-info">Zurückgegeben am {{ ausleihe.rueckgabedatum }}</span>
-                        {% elif ausleihe.istÜberfällig %}
+                        {% elif ausleihe.istUeberfaellig %}
                             <span class="badge bg-danger">Überfällig</span>
                         {% else %}
                             <span class="badge bg-success">Pünktlich</span>

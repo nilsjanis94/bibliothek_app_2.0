@@ -12,7 +12,7 @@
             <p><strong>Klasse:</strong> {{ schueler.klasse }}</p>
             <p><strong>E-Mail:</strong> {{ schueler.email }}</p>
             <p><strong>Gesperrt bis:</strong> {{ schueler.gesperrtBis }}</p>
-            <p><strong>Verspätungen:</strong> {{ schueler.anzahlVerspätungen }}</p>
+            <p><strong>Verspätungen:</strong> {{ schueler.anzahlVerspaetungen }}</p>
             <p><strong>Status:</strong> 
                 {% if schueler.kannAusleihen %}
                     <span class="badge bg-success">Aktiv</span>
@@ -47,9 +47,9 @@
                     <td>{{ ausleihe.exemplar.buch.titel }}</td>
                     <td>{{ ausleihe.exemplar.inventarnummer }}</td>
                     <td>{{ ausleihe.ausleihdatum }}</td>
-                    <td>{{ ausleihe.fälligkeitsdatum }}</td>
+                    <td>{{ ausleihe.faelligkeitsdatum }}</td>
                     <td>
-                        {% if ausleihe.istÜberfällig %}
+                        {% if ausleihe.istUeberfaellig %}
                             <span class="badge bg-danger">Überfällig</span>
                         {% else %}
                             <span class="badge bg-success">Pünktlich</span>

@@ -26,18 +26,18 @@
         </div>
         
         <div class="mb-3">
-            <label for="{{ form.schüler.id_for_label }}" class="form-label">Schüler</label>
-            {{ form.schüler|add_class:"form-select" }}
-            {% if form.schüler.errors %}
-                <div class="text-danger">{{ form.schüler.errors }}</div>
+            <label for="{{ form.schueler.id_for_label }}" class="form-label">Schüler</label>
+            {{ form.schueler|add_class:"form-select" }}
+            {% if form.schueler.errors %}
+                <div class="text-danger">{{ form.schueler.errors }}</div>
             {% endif %}
         </div>
         
         <div class="mb-3">
-            <label for="{{ form.fälligkeitsdatum.id_for_label }}" class="form-label">Fälligkeitsdatum</label>
-            {{ form.fälligkeitsdatum|add_class:"form-control" }}
-            {% if form.fälligkeitsdatum.errors %}
-                <div class="text-danger">{{ form.fälligkeitsdatum.errors }}</div>
+            <label for="{{ form.faelligkeitsdatum.id_for_label }}" class="form-label">Fälligkeitsdatum</label>
+            {{ form.faelligkeitsdatum|add_class:"form-control" }}
+            {% if form.faelligkeitsdatum.errors %}
+                <div class="text-danger">{{ form.faelligkeitsdatum.errors }}</div>
             {% endif %}
         </div>
         

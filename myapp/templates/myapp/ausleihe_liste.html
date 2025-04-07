@@ -24,11 +24,11 @@
                 <tr>
                     <td>{{ ausleihe.exemplar.buch.titel }}</td>
                     <td>{{ ausleihe.exemplar.inventarnummer }}</td>
-                    <td>{{ ausleihe.schüler.vorname }} {{ ausleihe.schüler.name }}</td>
+                    <td>{{ ausleihe.schueler.vorname }} {{ ausleihe.schueler.name }}</td>
                     <td>{{ ausleihe.ausleihdatum }}</td>
-                    <td>{{ ausleihe.fälligkeitsdatum }}</td>
+                    <td>{{ ausleihe.faelligkeitsdatum }}</td>
                     <td>
-                        {% if ausleihe.istÜberfällig %}
+                        {% if ausleihe.istUeberfaellig %}
                             <span class="badge bg-danger">Überfällig</span>
                         {% else %}
                             <span class="badge bg-success">Pünktlich</span>

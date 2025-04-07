@@ -1,0 +1,26 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Schüler löschen{% endblock %}
+
+{% block content %}
+    <h1>Schüler löschen</h1>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ schueler.vorname }} {{ schueler.name }}</h5>
+            <p class="card-text">
+                <strong>Klasse:</strong> {{ schueler.klasse }}<br>
+                <strong>E-Mail:</strong> {{ schueler.email }}<br>
+                <strong>Gesperrt bis:</strong> {{ schueler.gesperrtBis }}<br>
+                <strong>Anzahl Verspätungen:</strong> {{ schueler.anzahlVerspaetungen }}
+            </p>
+        </div>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <p>Sind Sie sicher, dass Sie diesen Schüler löschen möchten?</p>
+        <button type="submit" class="btn btn-danger">Ja, löschen</button>
+        <a href="{% url 'myapp:schueler_detail' schueler.id %}" class="btn btn-secondary">Abbrechen</a>
+    </form>
+{% endblock %} 

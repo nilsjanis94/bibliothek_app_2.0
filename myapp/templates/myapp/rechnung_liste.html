@@ -1,0 +1,45 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Rechnungen{% endblock %}
+
+{% block content %}
+    <h1>Offene Rechnungen</h1>
+    
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Rechnungsnummer</th>
+                    <th>Ausleihe</th>
+                    <th>Schüler</th>
+                    <th>Buch</th>
+                    <th>Datum</th>
+                    <th>Betrag</th>
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rechnung in rechnungen %}
+                    <tr>
+                        <td>{{ rechnung.rechnungsNummer }}</td>
+                        <td>#{{ rechnung.ausleihe.id }}</td>
+                        <td>{{ rechnung.ausleihe.schueler.vorname }} {{ rechnung.ausleihe.schueler.name }}</td>
+                        <td>{{ rechnung.ausleihe.exemplar.buch.titel }}</td>
+                        <td>{{ rechnung.datum }}</td>
+                        <td>{{ rechnung.betrag }} €</td>
+                        <td>
+                            <a href="{% url 'myapp:rechnung_detail' rechnung.id %}" class="btn btn-sm btn-info">Details</a>
+                            {% if not rechnung.istBezahlt %}
+                                <a href="{% url 'myapp:rechnung_bezahlen' rechnung.id %}" class="btn btn-sm btn-success">Als bezahlt markieren</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">Keine offenen Rechnungen vorhanden</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %} 

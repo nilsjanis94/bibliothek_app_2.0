@@ -1,0 +1,26 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Buch löschen{% endblock %}
+
+{% block content %}
+    <h1>Buch löschen</h1>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ buch.titel }}</h5>
+            <p class="card-text">
+                <strong>Autor:</strong> {{ buch.autor }}<br>
+                <strong>ISBN:</strong> {{ buch.ISBN }}<br>
+                <strong>Verlag:</strong> {{ buch.verlag }}<br>
+                <strong>Erscheinungsjahr:</strong> {{ buch.erscheinungsjahr }}
+            </p>
+        </div>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <p>Sind Sie sicher, dass Sie dieses Buch löschen möchten?</p>
+        <button type="submit" class="btn btn-danger">Ja, löschen</button>
+        <a href="{% url 'myapp:buch_detail' buch.id %}" class="btn btn-secondary">Abbrechen</a>
+    </form>
+{% endblock %} 

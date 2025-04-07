@@ -1,0 +1,42 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Exemplar Details{% endblock %}
+
+{% block content %}
+    <h1>Exemplar Details</h1>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ exemplar.buch.titel }}</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Inventarnummer:</strong> {{ exemplar.inventarnummer }}</p>
+                    <p><strong>Anschaffungsdatum:</strong> {{ exemplar.anschaffungsdatum }}</p>
+                    <p><strong>Zustand:</strong> {{ exemplar.zustand }}</p>
+                    <p><strong>Status:</strong> 
+                        {% if exemplar.status == 'verfügbar' %}
+                            <span class="badge bg-success">Verfügbar</span>
+                        {% elif exemplar.status == 'ausgeliehen' %}
+                            <span class="badge bg-warning">Ausgeliehen</span>
+                        {% elif exemplar.status == 'verloren' %}
+                            <span class="badge bg-danger">Verloren</span>
+                        {% elif exemplar.status == 'beschädigt' %}
+                            <span class="badge bg-danger">Beschädigt</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Buch:</strong> {{ exemplar.buch.titel }}</p>
+                    <p><strong>Autor:</strong> {{ exemplar.buch.autor }}</p>
+                    <p><strong>ISBN:</strong> {{ exemplar.buch.ISBN }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="btn-group">
+        <a href="{% url 'myapp:exemplar_bearbeiten' exemplar.id %}" class="btn btn-primary">Bearbeiten</a>
+        <a href="{% url 'myapp:exemplar_loeschen' exemplar.id %}" class="btn btn-danger">Löschen</a>
+        <a href="{% url 'myapp:exemplar_liste' %}" class="btn btn-secondary">Zurück zur Liste</a>
+    </div>
+{% endblock %} 

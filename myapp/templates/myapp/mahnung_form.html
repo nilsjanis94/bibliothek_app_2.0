@@ -1,0 +1,32 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Neue Mahnung{% endblock %}
+
+{% block content %}
+    <h1>Neue Mahnung erstellen</h1>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Ausleihe #{{ ausleihe.id }}</h5>
+            <p><strong>Schüler:</strong> {{ ausleihe.schueler.vorname }} {{ ausleihe.schueler.name }}</p>
+            <p><strong>Buch:</strong> {{ ausleihe.exemplar.buch.titel }}</p>
+            <p><strong>Fälligkeitsdatum:</strong> {{ ausleihe.faelligkeitsdatum }}</p>
+        </div>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="mahnungsTyp" class="form-label">Mahnungstyp</label>
+            <select name="mahnungsTyp" id="mahnungsTyp" class="form-select" required>
+                <option value="Erste Mahnung">Erste Mahnung</option>
+                <option value="Zweite Mahnung">Zweite Mahnung</option>
+                <option value="Letzte Mahnung">Letzte Mahnung</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Mahnung erstellen</button>
+        <a href="{% url 'myapp:ausleihe_detail' ausleihe.id %}" class="btn btn-secondary">Abbrechen</a>
+    </form>
+{% endblock %} 

@@ -1,0 +1,57 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Mahnung Details{% endblock %}
+
+{% block content %}
+    <h1>Mahnung Details</h1>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Mahnung #{{ mahnung.id }}</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Ausleihe:</strong> #{{ mahnung.ausleihe.id }}</p>
+                    <p><strong>Schüler:</strong> {{ mahnung.ausleihe.schueler.vorname }} {{ mahnung.ausleihe.schueler.name }}</p>
+                    <p><strong>Buch:</strong> {{ mahnung.ausleihe.exemplar.buch.titel }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Erstellungsdatum:</strong> {{ mahnung.erstellungsdatum }}</p>
+                    <p><strong>Mahnungstyp:</strong> {{ mahnung.mahnungsTyp }}</p>
+                    <p><strong>Status:</strong> 
+                        {% if mahnung.istBearbeitet %}
+                            <span class="badge bg-success">Bearbeitet</span>
+                        {% else %}
+                            <span class="badge bg-warning">Offen</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <h2>Zugehörige Rechnung</h2>
+    {% if mahnung.getRechnung %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Rechnung {{ mahnung.getRechnung.rechnungsNummer }}</h5>
+                <p><strong>Betrag:</strong> {{ mahnung.getRechnung.betrag }}€</p>
+                <p><strong>Status:</strong> 
+                    {% if mahnung.getRechnung.istBezahlt %}
+                        <span class="badge bg-success">Bezahlt</span>
+                    {% else %}
+                        <span class="badge bg-warning">Offen</span>
+                    {% endif %}
+                </p>
+                {% if not mahnung.getRechnung.istBezahlt %}
+                    <a href="{% url 'myapp:rechnung_bezahlen' mahnung.getRechnung.id %}" class="btn btn-success">Als bezahlt markieren</a>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-warning">
+            Keine Rechnung vorhanden
+        </div>
+    {% endif %}
+    
+    <a href="{% url 'myapp:mahnung_liste' %}" class="btn btn-secondary">Zurück zur Mahnungsliste</a>
+{% endblock %} 
