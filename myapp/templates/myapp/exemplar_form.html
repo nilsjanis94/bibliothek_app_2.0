@@ -1,0 +1,49 @@
+{% extends 'myapp/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Neues Buchexemplar hinzufügen{% endblock %}
+
+{% block content %}
+    <h1>Neues Buchexemplar hinzufügen</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        {{ form.buch }}
+        
+        <div class="mb-3">
+            <label for="{{ form.inventarnummer.id_for_label }}" class="form-label">Inventarnummer</label>
+            {{ form.inventarnummer|add_class:"form-control" }}
+            {% if form.inventarnummer.errors %}
+                <div class="text-danger">{{ form.inventarnummer.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.anschaffungsdatum.id_for_label }}" class="form-label">Anschaffungsdatum</label>
+            {{ form.anschaffungsdatum|add_class:"form-control" }}
+            {% if form.anschaffungsdatum.errors %}
+                <div class="text-danger">{{ form.anschaffungsdatum.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.zustand.id_for_label }}" class="form-label">Zustand</label>
+            {{ form.zustand|add_class:"form-control" }}
+            {% if form.zustand.errors %}
+                <div class="text-danger">{{ form.zustand.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+            {{ form.status|add_class:"form-control" }}
+            {% if form.status.errors %}
+                <div class="text-danger">{{ form.status.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Exemplar hinzufügen</button>
+        <a href="{% url 'myapp:buch_liste' %}" class="btn btn-secondary">Abbrechen</a>
+    </form>
+{% endblock %} 

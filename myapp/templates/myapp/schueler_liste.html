@@ -5,7 +5,7 @@
 {% block content %}
     <h1>Schülerliste</h1>
     
-    <a href="{% url 'admin:myapp_schüler_add' %}" class="btn btn-primary mb-3">Neuer Schüler</a>
+    <a href="{% url 'myapp:schueler_neu' %}" class="btn btn-primary mb-3">Neuer Schüler</a>
     
     <table class="table table-striped">
         <thead>
@@ -36,6 +36,7 @@
                     </td>
                     <td>
                         <a href="{% url 'myapp:schueler_detail' s.id %}" class="btn btn-sm btn-info">Details</a>
+                        <a href="{% url 'myapp:schueler_bearbeiten' s.id %}" class="btn btn-sm btn-warning">Bearbeiten</a>
                     </td>
                 </tr>
             {% empty %}

@@ -1,0 +1,73 @@
+{% extends 'myapp/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}
+    {% if schueler %}Schüler bearbeiten{% else %}Neuer Schüler{% endif %}
+{% endblock %}
+
+{% block content %}
+    <h1>{% if schueler %}Schüler bearbeiten{% else %}Neuer Schüler{% endif %}</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="{{ form.schueler_id.id_for_label }}" class="form-label">Schüler-ID</label>
+            {{ form.schueler_id|add_class:"form-control" }}
+            {% if form.schueler_id.errors %}
+                <div class="text-danger">{{ form.schueler_id.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+            {{ form.name|add_class:"form-control" }}
+            {% if form.name.errors %}
+                <div class="text-danger">{{ form.name.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.vorname.id_for_label }}" class="form-label">Vorname</label>
+            {{ form.vorname|add_class:"form-control" }}
+            {% if form.vorname.errors %}
+                <div class="text-danger">{{ form.vorname.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.klasse.id_for_label }}" class="form-label">Klasse</label>
+            {{ form.klasse|add_class:"form-control" }}
+            {% if form.klasse.errors %}
+                <div class="text-danger">{{ form.klasse.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.email.id_for_label }}" class="form-label">E-Mail</label>
+            {{ form.email|add_class:"form-control" }}
+            {% if form.email.errors %}
+                <div class="text-danger">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.gesperrtBis.id_for_label }}" class="form-label">Gesperrt bis</label>
+            {{ form.gesperrtBis|add_class:"form-control" }}
+            {% if form.gesperrtBis.errors %}
+                <div class="text-danger">{{ form.gesperrtBis.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.anzahlVerspätungen.id_for_label }}" class="form-label">Anzahl Verspätungen</label>
+            {{ form.anzahlVerspätungen|add_class:"form-control" }}
+            {% if form.anzahlVerspätungen.errors %}
+                <div class="text-danger">{{ form.anzahlVerspätungen.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Speichern</button>
+        <a href="{% url 'myapp:schueler_liste' %}" class="btn btn-secondary">Abbrechen</a>
+    </form>
+{% endblock %} 

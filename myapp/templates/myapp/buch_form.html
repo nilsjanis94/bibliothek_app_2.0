@@ -1,0 +1,65 @@
+{% extends 'myapp/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}
+    {% if buch %}Buch bearbeiten{% else %}Neues Buch{% endif %}
+{% endblock %}
+
+{% block content %}
+    <h1>{% if buch %}Buch bearbeiten{% else %}Neues Buch hinzufügen{% endif %}</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="{{ form.ISBN.id_for_label }}" class="form-label">ISBN</label>
+            {{ form.ISBN|add_class:"form-control" }}
+            {% if form.ISBN.errors %}
+                <div class="text-danger">{{ form.ISBN.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.titel.id_for_label }}" class="form-label">Titel</label>
+            {{ form.titel|add_class:"form-control" }}
+            {% if form.titel.errors %}
+                <div class="text-danger">{{ form.titel.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.autor.id_for_label }}" class="form-label">Autor</label>
+            {{ form.autor|add_class:"form-control" }}
+            {% if form.autor.errors %}
+                <div class="text-danger">{{ form.autor.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.verlag.id_for_label }}" class="form-label">Verlag</label>
+            {{ form.verlag|add_class:"form-control" }}
+            {% if form.verlag.errors %}
+                <div class="text-danger">{{ form.verlag.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.verlagungsdatum.id_for_label }}" class="form-label">Veröffentlichungsdatum</label>
+            {{ form.verlagungsdatum|add_class:"form-control" }}
+            {% if form.verlagungsdatum.errors %}
+                <div class="text-danger">{{ form.verlagungsdatum.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.wiederbeschaffungswert.id_for_label }}" class="form-label">Wiederbeschaffungswert (€)</label>
+            {{ form.wiederbeschaffungswert|add_class:"form-control" }}
+            {% if form.wiederbeschaffungswert.errors %}
+                <div class="text-danger">{{ form.wiederbeschaffungswert.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Speichern</button>
+        <a href="{% url 'myapp:buch_liste' %}" class="btn btn-secondary">Abbrechen</a>
+    </form>
+{% endblock %} 

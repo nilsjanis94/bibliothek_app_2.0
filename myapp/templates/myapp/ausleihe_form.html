@@ -1,0 +1,47 @@
+{% extends 'myapp/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Neue Ausleihe{% endblock %}
+
+{% block content %}
+    <h1>Neue Ausleihe</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="mb-3">
+            <label for="{{ form.exemplar.id_for_label }}" class="form-label">Exemplar</label>
+            {{ form.exemplar|add_class:"form-select" }}
+            {% if form.exemplar.errors %}
+                <div class="text-danger">{{ form.exemplar.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.schüler.id_for_label }}" class="form-label">Schüler</label>
+            {{ form.schüler|add_class:"form-select" }}
+            {% if form.schüler.errors %}
+                <div class="text-danger">{{ form.schüler.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.fälligkeitsdatum.id_for_label }}" class="form-label">Fälligkeitsdatum</label>
+            {{ form.fälligkeitsdatum|add_class:"form-control" }}
+            {% if form.fälligkeitsdatum.errors %}
+                <div class="text-danger">{{ form.fälligkeitsdatum.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Ausleihe erstellen</button>
+        <a href="{% url 'myapp:ausleihe_liste' %}" class="btn btn-secondary">Abbrechen</a>
+    </form>
+{% endblock %} 

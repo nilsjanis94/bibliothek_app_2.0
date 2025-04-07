@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import datetime, timedelta, date
 from typing import List
+
 class Buch(models.Model):
     ISBN = models.CharField(max_length=13, unique=True)
     titel = models.CharField(max_length=200)
