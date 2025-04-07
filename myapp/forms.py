@@ -1,17 +1,12 @@
 from django import forms
-from .models import Ausleihe, BuchExemplar, Schueler, Buch, Mahnung, Rechnung
+from .models import Ausleihe, BuchExemplar, Schueler, Buch, Mahnung, Rechnung, Status, Mahnungstyp
 from datetime import date, timedelta
 
 class BaseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            if isinstance(field.widget, (forms.TextInput, forms.NumberInput, forms.EmailInput, forms.DateInput)):
-                field.widget.attrs.update({'class': 'form-control'})
-            elif isinstance(field.widget, forms.Select):
-                field.widget.attrs.update({'class': 'form-select'})
-            elif isinstance(field.widget, forms.Textarea):
-                field.widget.attrs.update({'class': 'form-control', 'rows': 3})
+            field.widget.attrs.update({'class': 'form-control'})
 
 class BuchForm(BaseForm):
     class Meta:
@@ -34,6 +29,7 @@ class BuchExemplarForm(BaseForm):
         fields = ['buch', 'inventarnummer', 'anschaffungsdatum', 'zustand', 'status']
         widgets = {
             'anschaffungsdatum': forms.DateInput(attrs={'type': 'date'}),
+            'status': forms.Select(choices=Status.choices()),
         }
     
     def __init__(self, *args, **kwargs):
@@ -42,7 +38,7 @@ class BuchExemplarForm(BaseForm):
         if buch_id:
             self.fields['buch'].initial = buch_id
             self.fields['buch'].widget = forms.HiddenInput()
-        self.fields['status'].initial = 'verfügbar'
+        self.fields['status'].initial = Status.VERFUEGBAR.value
         self.fields['anschaffungsdatum'].initial = date.today()
 
 class SchuelerForm(BaseForm):
@@ -83,13 +79,15 @@ class AusleiheForm(BaseForm):
         schueler_id = kwargs.pop('schueler_id', None)
         super().__init__(*args, **kwargs)
         
-        # Filtere verfügbare Exemplare
-        self.fields['exemplar'].queryset = BuchExemplar.objects.filter(status=BuchExemplar.STATUS_VERFUEGBAR)
+        # Filtere nur verfügbare Exemplare
+        self.fields['exemplar'].queryset = BuchExemplar.objects.filter(
+            status=Status.VERFUEGBAR.value
+        )
         
-        # Filtere Schüler, die ausleihen dürfen
+        # Filtere nur Schüler, die ausleihen dürfen
         self.fields['schueler'].queryset = Schueler.objects.filter(
-            gesperrtBis__lt=date.today(),
-            anzahlVerspaetungen__lt=3
+            anzahlVerspaetungen__lt=3,
+            gesperrtBis__lt=date.today()
         )
         
         # Setze vorausgewählte Werte
@@ -118,6 +116,9 @@ class MahnungForm(BaseForm):
     class Meta:
         model = Mahnung
         fields = ['mahnungsTyp']
+        widgets = {
+            'mahnungsTyp': forms.Select(choices=Mahnungstyp.choices()),
+        }
 
 class RechnungForm(forms.ModelForm):
     class Meta:

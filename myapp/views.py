@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
-from .models import Buch, BuchExemplar, Schueler, Ausleihe, Mahnung, Rechnung
+from .models import Buch, BuchExemplar, Schueler, Ausleihe, Mahnung, Rechnung, Status, Mahnungstyp
 from .forms import AusleiheForm, BuchForm, BuchExemplarForm, SchuelerForm, MahnungForm
 from datetime import datetime, timedelta, date
 from django.contrib import messages
@@ -42,7 +42,8 @@ def ausleihe_neu(request):
             ausleihe = form.save(commit=False)
             ausleihe.ausleihdatum = date.today()
             ausleihe.save()
-            ausleihe.exemplar.setStatusAusgeliehen()
+            ausleihe.exemplar.status = Status.AUSGELIEHEN.value
+            ausleihe.exemplar.save()
             messages.success(request, 'Ausleihe wurde erfolgreich erstellt.')
             return redirect('myapp:ausleihe_detail', ausleihe_id=ausleihe.id)
     else:
@@ -53,7 +54,8 @@ def ausleihe_rueckgabe(request, ausleihe_id):
     ausleihe = get_object_or_404(Ausleihe, id=ausleihe_id)
     if not ausleihe.istZurueckgegeben:
         ausleihe.istZurueckgegeben = True
-        ausleihe.exemplar.setStatusVerfügbar()
+        ausleihe.exemplar.status = Status.VERFUEGBAR.value
+        ausleihe.exemplar.save()
         ausleihe.save()
         messages.success(request, 'Buch wurde erfolgreich zurückgegeben.')
     return redirect('myapp:ausleihe_detail', ausleihe_id=ausleihe.id)
@@ -141,6 +143,7 @@ def mahnung_erstellen(request, ausleihe_id):
         if form.is_valid():
             mahnung = form.save(commit=False)
             mahnung.ausleihe = ausleihe
+            mahnung.erstellungsdatum = date.today()
             mahnung.save()
             rechnung = mahnung.erstelleRechnung()
             if rechnung:
@@ -180,7 +183,11 @@ def buch_loeschen(request, buch_id):
 
 def exemplar_liste(request):
     exemplare = BuchExemplar.objects.all().select_related('buch')
-    return render(request, 'myapp/exemplar_liste.html', {'exemplare': exemplare})
+    return render(request, 'myapp/exemplar_liste.html', {
+        'exemplare': exemplare,
+        'status_verfuegbar': Status.VERFUEGBAR.value,
+        'status_ausgeliehen': Status.AUSGELIEHEN.value,
+    })
 
 def exemplar_detail(request, exemplar_id):
     exemplar = get_object_or_404(BuchExemplar, id=exemplar_id)

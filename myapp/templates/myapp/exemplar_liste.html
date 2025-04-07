@@ -25,25 +25,23 @@
                         <td>{{ exemplar.anschaffungsdatum }}</td>
                         <td>{{ exemplar.zustand }}</td>
                         <td>
-                            {% if exemplar.status == 'verfügbar' %}
+                            {% if exemplar.status == status_verfuegbar %}
                                 <span class="badge bg-success">Verfügbar</span>
-                            {% elif exemplar.status == 'ausgeliehen' %}
+                            {% elif exemplar.status == status_ausgeliehen %}
                                 <span class="badge bg-warning">Ausgeliehen</span>
-                            {% elif exemplar.status == 'verloren' %}
-                                <span class="badge bg-danger">Verloren</span>
-                            {% elif exemplar.status == 'beschädigt' %}
-                                <span class="badge bg-danger">Beschädigt</span>
+                            {% else %}
+                                <span class="badge bg-danger">{{ exemplar.get_status_display }}</span>
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'myapp:exemplar_detail' exemplar.id %}" class="btn btn-sm btn-info">Details</a>
-                            <a href="{% url 'myapp:exemplar_bearbeiten' exemplar.id %}" class="btn btn-sm btn-primary">Bearbeiten</a>
-                            <a href="{% url 'myapp:exemplar_loeschen' exemplar.id %}" class="btn btn-sm btn-danger">Löschen</a>
+                            <a href="{% url 'myapp:exemplar_detail' exemplar.id %}" class="btn btn-primary btn-sm">Details</a>
+                            <a href="{% url 'myapp:exemplar_bearbeiten' exemplar.id %}" class="btn btn-secondary btn-sm">Bearbeiten</a>
+                            <a href="{% url 'myapp:exemplar_loeschen' exemplar.id %}" class="btn btn-danger btn-sm">Löschen</a>
                         </td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">Keine Exemplare vorhanden</td>
+                        <td colspan="6">Keine Exemplare vorhanden.</td>
                     </tr>
                 {% endfor %}
             </tbody>

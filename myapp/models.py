@@ -2,19 +2,30 @@ from django.db import models
 from datetime import datetime, timedelta, date
 from typing import List
 from django.utils import timezone
+from enum import Enum
+
+class Status(Enum):
+    VERFUEGBAR = 'verfügbar'
+    AUSGELIEHEN = 'ausgeliehen'
+    VERLOREN = 'verloren'
+    BESCHAEDIGT = 'beschädigt'
+    
+    @classmethod
+    def choices(cls):
+        return [(status.value, status.name.capitalize()) for status in cls]
+
+class Mahnungstyp(Enum):
+    ERSTE = 'Erste Mahnung'
+    ZWEITE = 'Zweite Mahnung'
+    DRITTE = 'Dritte Mahnung'
+    LETZTE = 'Letzte Mahnung'
+    
+    @classmethod
+    def choices(cls):
+        return [(typ.value, typ.value) for typ in cls]
 
 class StatusMixin:
-    STATUS_VERFUEGBAR = 'verfügbar'
-    STATUS_AUSGELIEHEN = 'ausgeliehen'
-    STATUS_VERLOREN = 'verloren'
-    STATUS_BESCHAEDIGT = 'beschädigt'
-    
-    STATUS_CHOICES = [
-        (STATUS_VERFUEGBAR, 'Verfügbar'),
-        (STATUS_AUSGELIEHEN, 'Ausgeliehen'),
-        (STATUS_VERLOREN, 'Verloren'),
-        (STATUS_BESCHAEDIGT, 'Beschädigt'),
-    ]
+    STATUS_CHOICES = Status.choices()
 
 class Buch(models.Model):
     ISBN = models.CharField(max_length=13, unique=True)
@@ -39,18 +50,18 @@ class BuchExemplar(StatusMixin, models.Model):
     inventarnummer = models.CharField(max_length=200)
     anschaffungsdatum = models.DateField()
     zustand = models.CharField(max_length=200)
-    status = models.CharField(max_length=20, choices=StatusMixin.STATUS_CHOICES, default=StatusMixin.STATUS_VERFUEGBAR)
+    status = models.CharField(max_length=20, choices=Status.choices(), default=Status.VERFUEGBAR.value)
 
     def istVerfügbar(self)->bool:
-        return (self.status == self.STATUS_VERFUEGBAR and 
+        return (self.status == Status.VERFUEGBAR.value and 
                 not self.ausleihen.filter(istZurueckgegeben=False).exists())
     
     def setStatusAusgeliehen(self)->None:
-        self.status = self.STATUS_AUSGELIEHEN
+        self.status = Status.AUSGELIEHEN.value
         self.save()
         
     def setStatusVerfügbar(self)->None:
-        self.status = self.STATUS_VERFUEGBAR
+        self.status = Status.VERFUEGBAR.value
         self.save()
     
     def getBuch(self)->"Buch":
@@ -149,7 +160,7 @@ class Mahnung(models.Model):
         related_name='mahnungen'
     )
     erstellungsdatum = models.DateField()
-    mahnungsTyp = models.CharField(max_length=200)
+    mahnungsTyp = models.CharField(max_length=200, choices=Mahnungstyp.choices())
     istBearbeitet = models.BooleanField(default=False)
 
     def getRechnung(self)->"Rechnung":
