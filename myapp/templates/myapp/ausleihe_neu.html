@@ -1,0 +1,39 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Neue Ausleihe{% endblock %}
+
+{% block content %}
+    <h1>Neue Ausleihe</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="exemplar_id" class="form-label">Exemplar</label>
+            <select name="exemplar_id" id="exemplar_id" class="form-select" required>
+                <option value="">-- Exemplar auswählen --</option>
+                {% for exemplar in exemplare %}
+                    <option value="{{ exemplar.id }}" {% if vorausgewaehltes_exemplar == exemplar.id|stringformat:"i" %}selected{% endif %}>
+                        {{ exemplar.buch.titel }} - {{ exemplar.inventarnummer }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="mb-3">
+            <label for="schueler_id" class="form-label">Schüler</label>
+            <select name="schueler_id" id="schueler_id" class="form-select" required>
+                <option value="">-- Schüler auswählen --</option>
+                {% for s in schueler %}
+                    <option value="{{ s.id }}" {% if vorausgewaehlter_schueler == s.id|stringformat:"i" %}selected{% endif %} {% if not s.kannAusleihen %}disabled{% endif %}>
+                        {{ s.vorname }} {{ s.name }} ({{ s.klasse }})
+                        {% if not s.kannAusleihen %} - Gesperrt{% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Ausleihe erstellen</button>
+        <a href="{% url 'myapp:ausleihe_liste' %}" class="btn btn-secondary">Abbrechen</a>
+    </form>
+{% endblock %}

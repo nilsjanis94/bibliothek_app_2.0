@@ -1,0 +1,48 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Schülerliste{% endblock %}
+
+{% block content %}
+    <h1>Schülerliste</h1>
+    
+    <a href="{% url 'admin:myapp_schüler_add' %}" class="btn btn-primary mb-3">Neuer Schüler</a>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Vorname</th>
+                <th>Klasse</th>
+                <th>Ausleihen</th>
+                <th>Status</th>
+                <th>Aktionen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in schueler %}
+                <tr>
+                    <td>{{ s.schueler_id }}</td>
+                    <td>{{ s.name }}</td>
+                    <td>{{ s.vorname }}</td>
+                    <td>{{ s.klasse }}</td>
+                    <td>{{ s.ausleihen.count }}</td>
+                    <td>
+                        {% if s.kannAusleihen %}
+                            <span class="badge bg-success">Aktiv</span>
+                        {% else %}
+                            <span class="badge bg-danger">Gesperrt</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'myapp:schueler_detail' s.id %}" class="btn btn-sm btn-info">Details</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7">Keine Schüler gefunden</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

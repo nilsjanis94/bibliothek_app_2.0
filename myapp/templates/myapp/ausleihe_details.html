@@ -1,0 +1,99 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Ausleihe Details{% endblock %}
+
+{% block content %}
+    <h1>Ausleihe Details</h1>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Ausleihe #{{ ausleihe.id }}</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Schüler:</strong> {{ ausleihe.schüler.vorname }} {{ ausleihe.schüler.name }}</p>
+                    <p><strong>Buch:</strong> {{ ausleihe.exemplar.buch.titel }}</p>
+                    <p><strong>Exemplar:</strong> {{ ausleihe.exemplar.inventarnummer }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Ausleihdatum:</strong> {{ ausleihe.ausleihdatum }}</p>
+                    <p><strong>Fälligkeitsdatum:</strong> {{ ausleihe.fälligkeitsdatum }}</p>
+                    <p><strong>Status:</strong> 
+                        {% if ausleihe.istZurückgegeben %}
+                            <span class="badge bg-info">Zurückgegeben am {{ ausleihe.rueckgabedatum }}</span>
+                        {% elif ausleihe.istÜberfällig %}
+                            <span class="badge bg-danger">Überfällig</span>
+                        {% else %}
+                            <span class="badge bg-success">Pünktlich</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            
+            {% if not ausleihe.istZurückgegeben %}
+                <div class="mt-3">
+                    <a href="{% url 'myapp:ausleihe_rueckgabe' ausleihe.id %}" class="btn btn-warning">Buch zurückgeben</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if ausleihe.mahnungen.exists %}
+        <h2>Mahnungen</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Datum</th>
+                    <th>Typ</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mahnung in ausleihe.mahnungen.all %}
+                    <tr>
+                        <td>{{ mahnung.erstellungsdatum }}</td>
+                        <td>{{ mahnung.mahnungsTyp }}</td>
+                        <td>
+                            {% if mahnung.istBearbeitet %}
+                                <span class="badge bg-success">Bearbeitet</span>
+                            {% else %}
+                                <span class="badge bg-warning">Offen</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    
+    {% if ausleihe.rechnungen.exists %}
+        <h2>Rechnungen</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Rechnungsnummer</th>
+                    <th>Datum</th>
+                    <th>Betrag</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rechnung in ausleihe.rechnungen.all %}
+                    <tr>
+                        <td>{{ rechnung.rechnungsNummer }}</td>
+                        <td>{{ rechnung.datum }}</td>
+                        <td>{{ rechnung.betrag }} €</td>
+                        <td>
+                            {% if rechnung.istBezahlt %}
+                                <span class="badge bg-success">Bezahlt</span>
+                            {% else %}
+                                <span class="badge bg-warning">Offen</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    
+    <a href="{% url 'myapp:ausleihe_liste' %}" class="btn btn-secondary mt-3">Zurück zur Ausleihenübersicht</a>
+{% endblock %}

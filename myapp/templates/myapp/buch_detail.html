@@ -1,0 +1,56 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}{{ buch.titel }}{% endblock %}
+
+{% block content %}
+    <h1>{{ buch.titel }}</h1>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Buchinformationen</h5>
+            <p><strong>ISBN:</strong> {{ buch.ISBN }}</p>
+            <p><strong>Autor:</strong> {{ buch.autor }}</p>
+            <p><strong>Verlag:</strong> {{ buch.verlag }}</p>
+            <p><strong>Veröffentlichungsdatum:</strong> {{ buch.verlagungsdatum }}</p>
+            <p><strong>Wiederbeschaffungswert:</strong> {{ buch.wiederbeschaffungswert }} €</p>
+        </div>
+    </div>
+    
+    <h2>Exemplare</h2>
+    <a href="{% url 'myapp:exemplar_neu' %}?buch_id={{ buch.id }}" class="btn btn-primary mb-3">Neues Exemplar hinzufügen</a>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Inventarnummer</th>
+                <th>Anschaffungsdatum</th>
+                <th>Zustand</th>
+                <th>Status</th>
+                <th>Aktionen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for exemplar in exemplare %}
+                <tr>
+                    <td>{{ exemplar.inventarnummer }}</td>
+                    <td>{{ exemplar.anschaffungsdatum }}</td>
+                    <td>{{ exemplar.zustand }}</td>
+                    <td>{{ exemplar.status }}</td>
+                    <td>
+                        {% if exemplar.istVerfügbar %}
+                            <a href="{% url 'myapp:ausleihe_neu' %}?exemplar_id={{ exemplar.id }}" class="btn btn-sm btn-success">Ausleihen</a>
+                        {% else %}
+                            <span class="badge bg-secondary">Ausgeliehen</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">Keine Exemplare gefunden</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <a href="{% url 'myapp:buch_liste' %}" class="btn btn-secondary mt-3">Zurück zur Bücherliste</a>
+{% endblock %} 

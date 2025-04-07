@@ -1,0 +1,48 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Neues Buchexemplar hinzufügen{% endblock %}
+
+{% block content %}
+    <h1>Neues Buchexemplar hinzufügen</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="buch_id" class="form-label">Buch</label>
+            <select name="buch_id" id="buch_id" class="form-select" required>
+                <option value="">-- Buch auswählen --</option>
+                {% for buch in buecher %}
+                    <option value="{{ buch.id }}" {% if vorausgewaehltes_buch == buch.id|stringformat:"i" %}selected{% endif %}>
+                        {{ buch.titel }} ({{ buch.autor }})
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="mb-3">
+            <label for="inventarnummer" class="form-label">Inventarnummer</label>
+            <input type="text" class="form-control" id="inventarnummer" name="inventarnummer" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="anschaffungsdatum" class="form-label">Anschaffungsdatum</label>
+            <input type="date" class="form-control" id="anschaffungsdatum" name="anschaffungsdatum" value="{{ heute }}" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="zustand" class="form-label">Zustand</label>
+            <select name="zustand" id="zustand" class="form-select" required>
+                <option value="Neu">Neu</option>
+                <option value="Sehr gut">Sehr gut</option>
+                <option value="Gut">Gut</option>
+                <option value="Befriedigend">Befriedigend</option>
+                <option value="Ausreichend">Ausreichend</option>
+                <option value="Mangelhaft">Mangelhaft</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Exemplar hinzufügen</button>
+        <a href="{% url 'myapp:buch_liste' %}" class="btn btn-secondary">Abbrechen</a>
+    </form>
+{% endblock %} 

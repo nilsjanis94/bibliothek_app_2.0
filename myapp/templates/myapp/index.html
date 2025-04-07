@@ -1,0 +1,46 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Bibliothek - Startseite{% endblock %}
+
+{% block content %}
+    <h1>Willkommen in der Schulbibliothek</h1>
+    
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">{{ anzahl_buecher }}</h5>
+                    <p class="card-text">Bücher</p>
+                    <a href="{% url 'myapp:buch_liste' %}" class="btn btn-primary">Anzeigen</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">{{ anzahl_exemplare }}</h5>
+                    <p class="card-text">Exemplare</p>
+                    <a href="{% url 'myapp:buch_liste' %}" class="btn btn-primary">Anzeigen</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">{{ anzahl_schueler }}</h5>
+                    <p class="card-text">Schüler</p>
+                    <a href="{% url 'myapp:schueler_liste' %}" class="btn btn-primary">Anzeigen</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">{{ anzahl_ausleihen }}</h5>
+                    <p class="card-text">Aktive Ausleihen</p>
+                    <a href="{% url 'myapp:ausleihe_liste' %}" class="btn btn-primary">Anzeigen</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
