@@ -24,7 +24,7 @@ def schueler_liste(request):
 
 def schueler_detail(request, schueler_id):
     schueler = get_object_or_404(Schueler, id=schueler_id)
-    ausleihen = schueler.ausleihen.all()
+    ausleihen = schueler.ausleihen.filter(istZurueckgegeben=False).select_related('exemplar__buch')
     return render(request, 'myapp/schueler_detail.html', {'schueler': schueler, 'ausleihen': ausleihen})
 
 def ausleihe_liste(request):

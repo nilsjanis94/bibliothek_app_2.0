@@ -44,7 +44,7 @@ class BuchExemplarForm(BaseForm):
 class SchuelerForm(BaseForm):
     class Meta:
         model = Schueler
-        fields = ['vorname', 'name', 'klasse', 'email', 'gesperrtBis', 'anzahlVerspaetungen']
+        fields = ['schueler_id', 'vorname', 'name', 'klasse', 'email', 'gesperrtBis', 'anzahlVerspaetungen']
         widgets = {
             'gesperrtBis': forms.DateInput(attrs={'type': 'date'}),
             'anzahlVerspaetungen': forms.NumberInput(attrs={'min': 0}),
